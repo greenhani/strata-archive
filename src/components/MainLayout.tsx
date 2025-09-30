@@ -85,7 +85,6 @@ const mockDocuments: Document[] = [
 ];
 
 export function MainLayout({ userRole, onLogout }: MainLayoutProps) {
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(mockDocuments[0]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredDocuments = mockDocuments.filter(doc =>
@@ -247,204 +246,42 @@ export function MainLayout({ userRole, onLogout }: MainLayoutProps) {
             {/* Document Items */}
             <div className="flex-1 overflow-y-auto">
               {filteredDocuments.map((doc) => (
-                <div
-                  key={doc.id}
-                  className={`document-item p-4 border-b border-border cursor-pointer ${
-                    selectedDocument?.id === doc.id ? 'bg-primary/5 border-l-4 border-l-primary' : ''
-                  }`}
-                  onClick={() => setSelectedDocument(doc)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-3 flex-1">
-                      <FileText className="w-5 h-5 text-primary-light mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm truncate">{doc.name}</h4>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <span className="text-xs text-muted-foreground">{doc.type}</span>
-                          <span className="text-xs text-muted-foreground">•</span>
-                          <span className="text-xs text-muted-foreground">{doc.size}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-2">
-                          {getStatusBadge(doc.status)}
-                          <span className="text-xs text-muted-foreground">{doc.lastModified}</span>
+                <Link to={`/document/${doc.id}`} key={doc.id}>
+                  <div className="document-item p-4 border-b border-border cursor-pointer hover:bg-primary/5 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3 flex-1">
+                        <FileText className="w-5 h-5 text-primary-light mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm truncate">{doc.name}</h4>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <span className="text-xs text-muted-foreground">{doc.type}</span>
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground">{doc.size}</span>
+                          </div>
+                          <div className="flex items-center space-x-2 mt-2">
+                            {getStatusBadge(doc.status)}
+                            <span className="text-xs text-muted-foreground">{doc.lastModified}</span>
+                          </div>
                         </div>
                       </div>
+                      <Button variant="ghost" size="sm">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <Button variant="ghost" size="sm">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
 
-          {/* Document Preview */}
-          {selectedDocument && (
-            <div className="flex-1 flex flex-col">
-              {/* Preview Header */}
-              <div className="p-4 border-b border-border bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold truncate">{selectedDocument.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedDocument.owner} • {selectedDocument.lastModified}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Link to={`/document/${selectedDocument.id}`}>
-                      <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </Link>
-                    <Button variant="ghost" size="sm">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Share className="w-4 h-4" />
-                    </Button>
-                    {userRole !== "employee" && (
-                      <Button variant="ghost" size="sm">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex-1 flex">
-                {/* Document Content */}
-                <div className="flex-1 p-6 bg-muted/20">
-                  <div className="bg-card rounded-lg shadow-sm border border-border h-full flex items-center justify-center">
-                    <div className="text-center">
-                      <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">Document preview would appear here</p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        {selectedDocument.type} • {selectedDocument.size}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Metadata Sidebar */}
-                <div className="w-80 border-l border-border bg-card">
-                  <div className="p-4 space-y-6">
-                    {/* Basic Info */}
-                    <div>
-                      <h4 className="font-medium mb-3 flex items-center">
-                        <FileText className="w-4 h-4 mr-2" />
-                        Document Info
-                      </h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Status</span>
-                          {getStatusBadge(selectedDocument.status)}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Size</span>
-                          <span>{selectedDocument.size}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Type</span>
-                          <span>{selectedDocument.type}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* People */}
-                    <div>
-                      <h4 className="font-medium mb-3 flex items-center">
-                        <User className="w-4 h-4 mr-2" />
-                        People
-                      </h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Owner</span>
-                          <span>{selectedDocument.owner}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Department</span>
-                          <span>{selectedDocument.department}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Tags */}
-                    <div>
-                      <h4 className="font-medium mb-3 flex items-center">
-                        <Tag className="w-4 h-4 mr-2" />
-                        Tags
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedDocument.tags.map(tag => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    {canSeeVersioning && (
-                      <>
-                        <Separator />
-                        <div>
-                          <h4 className="font-medium mb-3 flex items-center">
-                            <Clock className="w-4 h-4 mr-2" />
-                            Version History
-                          </h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="p-2 bg-muted rounded-lg">
-                              <div className="font-medium">v1.2 (Current)</div>
-                              <div className="text-muted-foreground">Updated 2 hours ago</div>
-                            </div>
-                            <div className="p-2 hover:bg-muted rounded-lg cursor-pointer">
-                              <div className="font-medium">v1.1</div>
-                              <div className="text-muted-foreground">Updated 1 day ago</div>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {canSeeFullMetadata && (
-                      <>
-                        <Separator />
-                        <div>
-                          <h4 className="font-medium mb-3 flex items-center">
-                            <Activity className="w-4 h-4 mr-2" />
-                            Activity Log
-                          </h4>
-                          <div className="space-y-2 text-xs">
-                            <div className="p-2 bg-muted/50 rounded-lg">
-                              <div className="font-medium">Document approved</div>
-                              <div className="text-muted-foreground">by Sarah Johnson • 2 hours ago</div>
-                            </div>
-                            <div className="p-2 bg-muted/50 rounded-lg">
-                              <div className="font-medium">Document updated</div>
-                              <div className="text-muted-foreground">by Ahmed Al-Rashid • 1 day ago</div>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {userRole === "employee" && (
-                      <>
-                        <Separator />
-                        <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                          Acknowledge Document
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+          {/* Document Preview Placeholder */}
+          <div className="flex-1 flex items-center justify-center bg-muted/20">
+            <div className="text-center">
+              <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg font-medium text-muted-foreground mb-2">Select a document to view</p>
+              <p className="text-sm text-muted-foreground">Click on any document from the list to open it in a separate page</p>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
