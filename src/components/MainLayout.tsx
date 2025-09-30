@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -291,9 +292,11 @@ export function MainLayout({ userRole, onLogout }: MainLayoutProps) {
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="sm">
-                      <Eye className="w-4 h-4" />
-                    </Button>
+                    <Link to={`/document/${selectedDocument.id}`}>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </Link>
                     <Button variant="ghost" size="sm">
                       <Download className="w-4 h-4" />
                     </Button>
